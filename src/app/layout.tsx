@@ -1,30 +1,33 @@
+"use client";
+
 import Header from "@/components/Header/Header";
 import Footer from "@/components/Footer/Footer";
+import { NotificationProvider } from '@/components/NotificationContext/NotificationContext';
+import { usePathname } from "next/navigation";
 import type { Metadata } from "next";
 import "./globals.css";
-
-export const metadata: Metadata = {
-  title: "Autocare",
-  description: "Autocare",
-};
 
 export const viewport = {
   initialScale: 1.0,
   width: "device-width",
-  colorScheme: "dark"
-}
+  colorScheme: "dark",
+};
 
-export default function RootLayout({ children, }: Readonly<{ children: React.ReactNode }>) {
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  const pathname = usePathname();
+
+  const isLoginPage = pathname === "/login";
+
   return (
     <html lang="pt-br">
       <body>
-        <Header />
-
-        <div className="home">
-          {children}
-          <Footer />
-        </div>
-      
+        <NotificationProvider>
+          {!isLoginPage && <Header />}
+          <div className="home">
+            {children}
+          </div>
+          {!isLoginPage && <Footer />}
+        </NotificationProvider>
       </body>
     </html>
   );
