@@ -226,23 +226,6 @@ function SignUpForm() {
         return { strength, message: messages[strength] };
     };
 
-    const getPasswordStrengthColor = (strength: number) => {
-        switch (strength) {
-            case 1:
-                return '#ff0000'; // Vermelho
-            case 2:
-                return '#ff6600'; // Laranja
-            case 3:
-                return '#ffcc00'; // Amarelo
-            case 4:
-                return '#66ff66'; // Verde
-            case 5:
-                return '#00cc00'; // Verde escuro
-            default:
-                return '#ff0000'; // Vermelho
-        }
-    };
-
     const handleLogoClick = () => {
         router.push('/')
     };
