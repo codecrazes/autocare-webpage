@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function Footer() {
   return (
-    <div className="mt-10 w-full h-[14vh] bg-[#F5F5F7] flex flex-row items-center justify-between">
+    <div className="w-full h-[14vh] bg-[#F5F5F7] flex flex-row items-center justify-between">
       <div className="flex flex-col ml-16">
         <a className="text-gray-700">© 2024 Autocare.</a>
         <a className="text-gray-700">Termos de uso | Política de privacidade</a>
