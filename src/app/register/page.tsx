@@ -8,6 +8,7 @@ import StepButtons from '@/components/StepButtons/StepButtons';
 import PrimaryInput from '@/components/PrimaryInput/PrimaryInput';
 import SecondaryInput from '@/components/SecondaryInput/SecondaryInput';
 import SecondaryButton from '@/components/SecondaryButton/SecondaryButton';
+import apiFetch from '@/utils/APIFetch';
 
 interface FormData {
     email: string;
@@ -137,7 +138,7 @@ function SignUpForm() {
         }));
     };
 
-    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         if (!formData.password || !formData.confirmPassword || !formData.first_name || !formData.last_name) {
@@ -193,7 +194,53 @@ function SignUpForm() {
             return;
         }
 
-        console.log('Chamando endpoint de registro');
+        try {
+            const response = await apiFetch('/users/', {
+                method: 'POST',
+                body: JSON.stringify(formData),
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            console.log('Usuário criado:', response.data);
+            addNotification('success', 'Sucesso', 'Usuário criado com sucesso!');
+
+            setFormData({
+                email: '',
+                username: '',
+                first_name: '',
+                last_name: '',
+                password: '',
+                confirmPassword: '',
+                phone_number: ''
+            });
+
+            router.push('/email-confirmation');
+        } catch (error: any) {
+            console.error('Erro capturado:', error);
+            
+            console.log('Erro:', error.response);
+            console.log('Erro:', error.response.data);
+            console.log('Erro:', error.response.data.detail);
+            if (error.response && error.response.data && error.response.data.detail) {
+                const errorDetail = error.response.data.detail;
+                console.log('Detalhes do erro:', errorDetail);
+
+                if (errorDetail === 'Username already exists') {
+                    addNotification('error', 'Erro', 'O nome de usuário informado já está em uso.');
+                    setCurrentStep(1);
+                } else if (errorDetail === 'Email already exists') {
+                    addNotification('error', 'Erro', 'Esse e-mail já está cadastrado, tente fazer login.');
+                    setCurrentStep(1);
+                } else {
+                    addNotification('error', 'Erro', `Erro: ${errorDetail}`);
+                }
+            } else {
+                addNotification('error', 'Erro', 'Falha ao criar usuário. Por favor, tente novamente.');
+                console.error('Erro sem detalhe esperado:', error);
+            }
+        }
     };
 
     const handleLoginClick = () => {
