@@ -36,7 +36,9 @@ const SecondaryInput: React.FC<SecondaryInputProps> = ({
                 onChange={onChange}
                 onFocus={onFocus}
                 required={required}
-                className={`w-[280px] h-[50px] rounded-[12px] bg-[#F5F7FA] text-[#565656] font-roboto text-[15px] font-normal leading-[120%] border-none px-[15px] pr-[40px] transition-shadow duration-300 ease focus:outline-none focus:shadow-md ${className}`}
+                className={`w-[280px] h-[50px] rounded-[12px] bg-[#F5F7FA] text-[#565656] font-roboto text-[15px] font-normal leading-[120%] border-none px-[15px] pr-[40px] transition-shadow duration-300 ease focus:outline-none focus:shadow-md ${
+                    required ? 'border-red-500 border-2' : ''
+                } ${className}`}
             />
             <div
                 onClick={togglePasswordVisibility}

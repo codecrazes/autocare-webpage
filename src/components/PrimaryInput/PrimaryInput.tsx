@@ -31,7 +31,9 @@ const PrimaryInput: React.FC<TextInputProps> = ({
                 onChange={onChange}
                 onFocus={onFocus}
                 required={required}
-                className={`w-full h-[50px] rounded-[12px] bg-[#F5F7FA] text-[#565656] font-roboto text-[15px] font-normal leading-[120%] border-none pl-[15px] pr-[40px] transition-shadow duration-300 ease-in-out outline-none focus:shadow-[0_0_5px_#565656] ${className}`}
+                className={`w-full h-[50px] rounded-[12px] bg-[#F5F7FA] text-[#565656] font-roboto text-[15px] font-normal leading-[120%] border-none pl-[15px] pr-[40px] transition-shadow duration-300 ease-in-out outline-none focus:shadow-[0_0_5px_#565656] ${
+                    required ? 'border-red-500 border-2' : ''
+                } ${className}`}
             />
         </div>
     );

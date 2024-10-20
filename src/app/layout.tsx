@@ -16,17 +16,22 @@ export const viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const pathname = usePathname();
 
-  const isLoginPage = pathname === "/login" || pathname === "/register";
+  const diferentPage = 
+    pathname === "/login" || 
+    pathname === "/register" || 
+    pathname === "/email-confirmation" || 
+    pathname === "/password-recovery" ||
+    pathname.startsWith("/email-confirmated");
 
   return (
     <html lang="pt-br">
       <body>
         <NotificationProvider>
-          {!isLoginPage && <Header />}
+          {!diferentPage && <Header />}
           <div className="home">
             {children}
           </div>
-          {!isLoginPage && <Footer />}
+          {!diferentPage && <Footer />}
         </NotificationProvider>
       </body>
     </html>
