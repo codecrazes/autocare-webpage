@@ -8,6 +8,7 @@ import GoogleLoginButton from '@/components/GoogleButton/GoogleButton';
 import PrimaryInput from '@/components/PrimaryInput/PrimaryInput';
 import SecondaryButton from '@/components/SecondaryButton/SecondaryButton';
 import SecondaryInput from '@/components/SecondaryInput/SecondaryInput';
+import apiFetch from '@/utils/APIFetch';
 
 interface FormData {
     username: string;
@@ -16,7 +17,7 @@ interface FormData {
 }
 
 interface IsRequired {
-    email: boolean;
+    username: boolean;
     password: boolean;
 }
 
@@ -31,7 +32,7 @@ const Login: React.FC = () => {
     });
 
     const [isRequired, setIsRequired] = useState<IsRequired>({
-        email: false,
+        username: false,
         password: false,
     });
 
@@ -50,44 +51,67 @@ const Login: React.FC = () => {
         }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (
+        e: React.FormEvent<HTMLFormElement>,
+        formData: FormData,
+        setIsRequired: React.Dispatch<React.SetStateAction<{ username: boolean; password: boolean }>>
+    ): Promise<void> => {
         e.preventDefault();
 
         if (!formData.username || !formData.password) {
             addNotification('error', 'Erro', 'Por favor, preencha todos os campos obrigatórios.');
             setIsRequired({
-                email: !formData.username,
+                username: !formData.username,
                 password: !formData.password,
             });
             return;
         }
 
-        console.log('Chamando endpoint de autenticação');
-        const response = true;
+        const urlencodedData = new URLSearchParams();
+        urlencodedData.append('username', formData.username);
+        urlencodedData.append('password', formData.password);
 
-        if (response) {
+        try {
+            const response = await apiFetch('/auth/token', {
+                method: 'POST',
+                body: urlencodedData,
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+            });
+
+            console.log('Login bem-sucedido:', response);
             addNotification('success', 'Sucesso', 'Login bem-sucedido!');
-            const token = 'dummy_token';
+
+            const token = response.access_token;
 
             if (formData.rememberMe) {
+                console.log('Salvando token no localStorage:', token);
                 localStorage.setItem('token', token);
             } else {
+                console.log('Salvando token no sessionStorage:', token);
                 sessionStorage.setItem('token', token);
             }
 
             router.push('/');
-        } else {
-            addNotification('error', 'Erro', 'Falha no login. Verifique suas credenciais e tente novamente.');
+        } catch (error: any) {
+            if (error.response) {
+                console.error('Erro na resposta:', error.response.data);
+                addNotification('error', 'Erro', 'Falha no login. Verifique suas credenciais e tente novamente.');
+            } else {
+                console.error('Erro genérico:', error);
+                addNotification('error', 'Erro', 'Ocorreu um erro. Por favor, tente novamente.');
+            }
         }
     };
+
 
     const handleRegisterClick = () => {
         router.push('/register');
     };
 
     const handleForgetPasswordClick = () => {
-        console.log('Forget password clicked');
-        addNotification('info', 'Esqueceu a senha', 'Adicionar lógica de recuperação de senha.');
+        router.push('/password-recovery');
     };
 
     const handleLogoClick = () => {
@@ -107,19 +131,19 @@ const Login: React.FC = () => {
             </div>
             <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col items-center w-[422px] h-[532px]">
                 <h1 className="text-2xl font-medium mb-4">Entrar</h1>
-                <GoogleLoginButton onClick={handleGoogleLogin} aria-label="Login com Google" />
+                <GoogleLoginButton/>
                 <span className="text-gray-600 text-sm mt-4 mb-4">Ou use sua conta</span>
-                <form className="w-full flex flex-col gap-4" noValidate onSubmit={handleSubmit}>
+                <form className="w-full flex flex-col gap-4" noValidate onSubmit={(e) => handleSubmit(e, formData, setIsRequired)} >
                     <PrimaryInput
                         type="text"
                         placeholder="Email"
                         name="username"
                         value={formData.username}
                         onChange={handleChange}
-                        onFocus={() => handleFocus('email')}
-                        required={isRequired.email}
+                        onFocus={() => handleFocus('username')}
+                        required={isRequired.username}
                         aria-label="Email"
-                        className={`w-full ${isRequired.email ? 'border-red-500' : ''}`}
+                        className={`w-full ${isRequired.username ? 'border-red-500' : ''}`}
                     />
                     <SecondaryInput
                         placeholder="Senha"
