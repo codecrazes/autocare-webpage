@@ -10,8 +10,22 @@ const apiFetch = async (endpoint: string, options?: RequestInit) => {
   });
 
   if (!response.ok) {
-    const errorMessage = await response.text();
-    throw new Error(`Error: ${response.status} - ${errorMessage}`);
+    let errorDetail: string;
+
+    try {
+      const errorData = await response.json();
+      errorDetail = errorData.detail || 'Erro desconhecido'; 
+    } catch {
+      errorDetail = await response.text() || 'Erro desconhecido';
+    }
+
+    throw {
+      response: {
+        status: response.status,
+        statusText: response.statusText,
+        data: { detail: errorDetail },
+      },
+    };
   }
 
   return response.json();

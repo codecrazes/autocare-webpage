@@ -1,3 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+*:required {
+    border: 1px solid #ff2600;
+}
