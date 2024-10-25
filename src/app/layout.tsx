@@ -16,11 +16,12 @@ export const viewport = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const pathname = usePathname();
 
-  const diferentPage = 
-    pathname === "/login" || 
-    pathname === "/register" || 
-    pathname === "/email-confirmation" || 
+  const diferentPage =
+    pathname === "/login" ||
+    pathname === "/register" ||
+    pathname === "/email-confirmation" ||
     pathname === "/password-recovery" ||
+    pathname === "/diagnosis" ||
     pathname.startsWith("/email-confirmated");
 
   return (

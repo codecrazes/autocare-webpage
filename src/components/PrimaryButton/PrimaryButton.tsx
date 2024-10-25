@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { FormEvent } from 'react';
 
 interface ButtonProps {
     text: string;
-    onClick: () => void;
+    onClick: (e?: FormEvent<Element>) => void;
 }
 
 const PrimaryButton: React.FC<ButtonProps> = ({ text, onClick }) => {

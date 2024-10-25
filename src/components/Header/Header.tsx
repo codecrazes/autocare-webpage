@@ -62,7 +62,11 @@ export default function Header() {
     handleClose();
     if (option === 'logoff') {
       localStorage.removeItem('token');
+      localStorage.removeItem('currentStep');
+      sessionStorage.removeItem('currentStep');
       sessionStorage.removeItem('token');
+      localStorage.removeItem('diagnosisId');
+      localStorage.removeItem('selectedVehicleId');
       setIsLoggedIn(false);
       router.push('/login');
     } else if (option === 'profile') {
@@ -129,15 +133,15 @@ export default function Header() {
               </MenuItem>
               <Divider />
               <MenuItem onClick={handleMenuClick('bookings')}>
-                <CalendarTodayIcon fontSize="small" sx={{ mr: 1 }}/>
+                <CalendarTodayIcon fontSize="small" sx={{ mr: 1 }} />
                 Meus agendamentos
               </MenuItem>
               <MenuItem onClick={handleMenuClick('settings')}>
-                <Settings fontSize="small" sx={{ mr: 1 }}/>
+                <Settings fontSize="small" sx={{ mr: 1 }} />
                 Configurações
               </MenuItem>
               <MenuItem onClick={handleMenuClick('logoff')}>
-                <Logout fontSize="small" sx={{ mr: 1 }}/>
+                <Logout fontSize="small" sx={{ mr: 1 }} />
                 Sair
               </MenuItem>
             </Menu>

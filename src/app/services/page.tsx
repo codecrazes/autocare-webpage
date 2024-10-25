@@ -11,6 +11,7 @@ import { FourSquare } from 'react-loading-indicators';
 import apiFetch from '../../utils/APIFetch';
 import PrimarySelect from "@/components/PrimarySelect/PrimarySelect";
 import PrimaryInput from "@/components/PrimaryInput/PrimaryInput";
+import Spinner from "@/components/Spinner/Spinner";
 
 const images = [
     "/img/Centro_auto1.png",
@@ -452,8 +453,8 @@ const ServicesSection: React.FC = () => {
 
             <div className="w-7/12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {loading ? (
-                    <div className="loading-indicator-services">
-                        <FourSquare color="#0071E3" size="medium" text="" textColor="#0071E3" />
+                    <div className='w-full h-full flex justify-center items-center'>
+                        <Spinner />
                     </div>
                 ) : centers.length > 0 ? (
                     centers.map((center, index) => (
