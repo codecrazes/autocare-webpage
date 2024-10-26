@@ -39,7 +39,7 @@ const Bookings = () => {
 
     const fetchDiagnosis = async () => {
         try {
-            const data = await apiFetch<Diagnosis[]>('/diagnosis/user', {
+            const data = await apiFetch('/diagnosis/user', {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -52,7 +52,7 @@ const Bookings = () => {
 
     const fetchBookings = async () => {
         try {
-            const data = await apiFetch<Booking[]>('/bookings/user', {
+            const data = await apiFetch('/bookings/user', {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -108,42 +108,6 @@ const Bookings = () => {
                         controle completo sobre o atendimento do seu veículo</p>
                 </div>
             </div>
-
-            {/* <div className="w-7/12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {loading ? (
-                    <div className="loading-indicator-services">
-                        <FourSquare color="#0071E3" size="medium" text="" textColor="#0071E3" />
-                    </div>
-                ) : centers.length > 0 ? (
-                    centers.map((center, index) => (
-                        <div key={center.id} className="bg-white shadow-lg rounded-lg p-4">
-                            <Image
-                                src={images[index % images.length]}
-                                alt={center.name}
-                                className="w-full h-48 object-cover rounded-t-lg"
-                                height={192}
-                                width={320}
-                                priority
-                            />
-                            <div className="mt-4">
-                                <h1 className="text-xl font-medium">{center.name}</h1>
-                                <p className="text-gray-500">{center.rating} ⭐</p>
-                                <p className="mt-2 text-gray-700">{center.address}</p>
-                                <button
-                                    className="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg"
-                                    onClick={() => handleOpenModal(index)}
-                                >
-                                    Agendar
-                                </button>
-                            </div>
-                        </div>
-                    ))
-                ) : (
-                    <div className="col-span-3 text-center">
-                        <p>Ops! Não encontramos nenhum centro automotivo com esses filtros.</p>
-                    </div>
-                )}
-            </div> */}
 
             <h2 className="text-2xl font-semibold mb-4">Meus Diagnósticos</h2>
             <div className="w-7/12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
