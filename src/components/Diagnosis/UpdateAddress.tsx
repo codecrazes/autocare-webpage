@@ -133,7 +133,7 @@ const UpdateAddress: React.FC<UpdateAddressProps> = ({
                         onClick={() => router.push('/faq')}
                         className="text-blue-600 underline cursor-pointer"
                     >
-                        Preciso de ajuda ->
+                        Preciso de ajuda &rarr
                     </a>
                 </div>
             </div>

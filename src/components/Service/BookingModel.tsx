@@ -142,4 +142,6 @@ const BookingModal = forwardRef<HTMLElement, BookingModalProps>(
   }
 );
 
+BookingModal.displayName = 'BookingModal';
+
 export default BookingModal;

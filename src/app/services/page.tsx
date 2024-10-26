@@ -121,10 +121,11 @@ const ServicesSection: React.FC = () => {
 
         try {
             console.log('Buscando dados do diagnóstico:', id);
-            const diagnosisData = await apiFetch(`/diagnosis/${id}`, {
+            const diagnosisData = await apiFetch(`/diagnosis/?diagnosis_id=${id}`, {
+                method: 'GET',
                 headers: {
-                    Authorization: `Bearer ${token}`,
-                },
+                    Authorization: `Bearer ${token}`
+                }
             });
 
             if (diagnosisData.problem_details && diagnosisData.problem_details.service && diagnosisData.problem_details.price) {
@@ -287,6 +288,7 @@ const ServicesSection: React.FC = () => {
         };
 
         fetchData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchParams]);
 
     const handleSearch = async (): Promise<void> => {

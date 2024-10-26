@@ -41,7 +41,7 @@ const LoggedOutSection: React.FC<LoggedOutSectionProps> = ({ currentStep, handle
                         className="text-blue-600 underline cursor-pointer text-xl"
                         onClick={handleNextStep}
                     >
-                        Continuar sem login ->
+                        Continuar sem login &rarr
                     </a>
                 </div>
             </div>

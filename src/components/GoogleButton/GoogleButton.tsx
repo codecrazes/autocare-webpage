@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import apiFetch from '../../utils/APIFetch';
@@ -28,12 +28,12 @@ const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({ onClick }) => {
 
 const GoogleLoginComponent: React.FC = () => {
     const router = useRouter();
-    let isGoogleInitialized = false;
+    const isGoogleInitialized = useRef(false);
 
     useEffect(() => {
         const initializeGoogleSignIn = () => {
-            if (!isGoogleInitialized) {
-                isGoogleInitialized = true;
+            if (!isGoogleInitialized.current) {
+                isGoogleInitialized.current = true;
 
                 const script = document.createElement('script');
                 script.src = 'https://accounts.google.com/gsi/client';

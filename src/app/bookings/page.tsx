@@ -89,6 +89,7 @@ const Bookings = () => {
     useEffect(() => {
         fetchDiagnosis();
         fetchBookings();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (

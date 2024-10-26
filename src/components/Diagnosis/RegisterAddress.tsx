@@ -151,7 +151,7 @@ const RegisterAddressComponent: React.FC<RegisterAddressComponentProps> = ({
                         className="text-blue-500 mt-4 hover:underline cursor-pointer"
                         onClick={() => router.push('/faq')}
                     >
-            Preciso de ajuda ->
+                        Preciso de ajuda &rarr
                     </a>
                 </div>
             </div>
