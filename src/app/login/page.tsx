@@ -168,7 +168,7 @@ const Login: React.FC = () => {
                             Lembre de mim
                         </label>
                     </div>
-                    <SecondaryButton text="Entrar" type="submit" aria-label="Entrar" className="w-full mt-4" />
+                    <SecondaryButton text="Entrar" type="submit" aria-label="Entrar"/>
                     <div className="text-center mt-4">
                         <a className="text-blue-500 text-sm cursor-pointer" onClick={handleForgetPasswordClick} aria-label="Esqueceu sua senha?">
                             Esqueceu sua senha?

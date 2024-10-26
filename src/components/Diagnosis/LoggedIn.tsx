@@ -19,7 +19,7 @@ const LoggedInSection: React.FC<LoggedInSectionProps> = ({ currentStep, handleNe
 
     return (
         <div className="flex flex-col items-center">
-            <Logo link="/" onClick={() => handleNavigation('/')} />
+            <Logo />
             <ProgressBar currentStep={currentStep} totalSteps={7} />
             <div className="diagnosisForm-content flex flex-col items-start w-[600px] h-full p-5">
                 <h1 className="text-black font-inter text-3xl font-normal leading-snug">

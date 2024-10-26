@@ -9,9 +9,11 @@ import Image from 'next/image';
 import car1 from '../../../public/img/car1.png';
 import car2 from '../../../public/img/car2.png';
 
-type Vehicle = {
-    model: string;
+export type Vehicle = {
     brand: string;
+    year: number;
+    model: string;
+    id: number;
 };
 
 const carImages = [car1, car2];

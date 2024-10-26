@@ -19,7 +19,7 @@ export default function Service() {
                     Encontre mecânicas de todo o Brasil
                 </p>
                 <div className="absolute bottom-8 left-8">
-                    <Button text="Agendar Serviço" onClick={handleClick} className="w-[200px]" />
+                    <Button text="Agendar Serviço" onClick={handleClick}/>
                 </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-[1200px]">
@@ -32,7 +32,7 @@ export default function Service() {
                             Busque informações sobre seu veículo
                         </p>
                         <div className="absolute bottom-8 left-8">
-                            <Button text="Faça seu Cadastro" onClick={handleClick} className="w-[200px]" />
+                            <Button text="Faça seu Cadastro" onClick={handleClick}/>
                         </div>
                     </div>
                 </div>
@@ -45,7 +45,7 @@ export default function Service() {
                             Faça um diagnóstico veicular
                         </p>
                         <div className="absolute bottom-8 left-8">
-                            <Button text="Iniciar Diagnóstico" onClick={handleClick} className="w-[200px]" />
+                            <Button text="Iniciar Diagnóstico" onClick={handleClick}/>
                         </div>
                     </div>
                 </div>

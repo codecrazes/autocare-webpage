@@ -1,26 +1,31 @@
-"use client";
-
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
 import apiFetch from '../../utils/APIFetch';
-
-interface BookingModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onConfirm: (booking: { date: string | null; hour: string | null }) => void;
-  mechanicsDetail: { id: string; name: string; address: string };
-  token: string;
-}
 
 interface Hour {
   time: string;
   reserved: boolean;
 }
 
-const BookingModal = forwardRef<HTMLElement, BookingModalProps>(
+interface BookingModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: (booking: { date: string | null; hour: string | null }) => void;
+  mechanicsDetail: { id: number; name: string; address: string };
+  token: string;
+}
+
+// Define o tipo da referência que o BookingModal expõe
+interface BookingModalRef {
+  scrollIntoView: () => void;
+}
+
+const BookingModal = forwardRef<BookingModalRef, BookingModalProps>(
   ({ isOpen, onClose, onConfirm, mechanicsDetail, token }, ref) => {
     const [availableHours, setAvailableHours] = useState<Hour[]>([]);
     const [selectedHour, setSelectedHour] = useState<string | null>(null);
     const [selectedDate, setSelectedDate] = useState<string | null>(null);
+
+    const modalRef = React.useRef<HTMLDivElement>(null);
 
     useImperativeHandle(ref, () => ({
       scrollIntoView: () => {
@@ -29,8 +34,6 @@ const BookingModal = forwardRef<HTMLElement, BookingModalProps>(
         }
       },
     }));
-
-    const modalRef = React.useRef<HTMLDivElement>(null);
 
     useEffect(() => {
       if (isOpen && modalRef.current) {

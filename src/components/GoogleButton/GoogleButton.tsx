@@ -1,4 +1,10 @@
 import React, { useEffect, useRef } from 'react';
+
+declare global {
+    interface Window {
+        google: any;
+    }
+}
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import apiFetch from '../../utils/APIFetch';

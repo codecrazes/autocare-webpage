@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { FormEvent } from 'react';
 import Image from 'next/image';
 
 interface StepButtonsProps {
     currentStep: number;
-    handlePreviousStep: () => void;
-    handleNextStep: () => void;
+
+    handlePreviousStep: (e: FormEvent<HTMLButtonElement>) => void;
+
+    handleNextStep: (e: FormEvent<HTMLButtonElement>) => void;
 }
 
 const StepButtons: React.FC<StepButtonsProps> = ({ currentStep, handlePreviousStep, handleNextStep }) => {

@@ -91,7 +91,7 @@ const PasswordRecovery = () => {
     } else if (requestStatus === 'error') {
         content = (
             <div className="flex flex-col items-center">
-                <div className="cursor-pointer" onClick={() => router.reload()}>
+                <div className="cursor-pointer" onClick={() => router.refresh()}>
                     <FontAwesomeIcon icon={faArrowLeft} className="text-2xl" />
                 </div>
                 <h1 className="text-xl font-semibold">Ocorreu um erro ao enviar o email de recuperação</h1>

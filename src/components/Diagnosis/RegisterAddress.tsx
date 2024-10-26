@@ -21,7 +21,7 @@ interface RegisterAddressComponentProps {
     currentStep: number;
     formAddressData: AddressData;
     handlePreviousStep: (e: React.MouseEvent<HTMLDivElement>) => void;
-    setFormAddressData: (data: AddressData) => void;
+    setFormAddressData: React.Dispatch<React.SetStateAction<AddressData>>;
     handleAddressRegister: () => void;
     isRequired: Record<keyof AddressData, boolean>;
 }

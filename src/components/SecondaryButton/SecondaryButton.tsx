@@ -2,7 +2,7 @@ import React from 'react';
 
 interface SecondaryButtonProps {
     text: string;
-    onClick?: () => void;
+    onClick?: (e: React.FormEvent<HTMLButtonElement>) => void;
     type?: 'button' | 'submit' | 'reset';
 }
 

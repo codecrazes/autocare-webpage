@@ -37,6 +37,8 @@ interface DiagnosisData {
 interface Center {
     id: number;
     name: string;
+    address: string;
+    rating: number; // Add the rating property
 }
 
 interface Filter {
@@ -49,6 +51,7 @@ interface Filter {
     waiting_room: boolean;
     available_services: string;
     specialties: string;
+    date: string;
 }
 
 
@@ -67,6 +70,7 @@ const ServicesSection: React.FC = () => {
         waiting_room: false,
         available_services: "",
         specialties: "",
+        date: "",
     });
     const [imageMap, setImageMap] = useState<Record<number, string>>({});
     const [limit] = useState<number>(6);
@@ -193,6 +197,7 @@ const ServicesSection: React.FC = () => {
             waiting_room: searchParams.get("waiting_room") === "true",
             available_services: bestServiceMatch,
             specialties: searchParams.get("specialties") || "",
+            date: searchParams.get("date") || "",
         };
     }, [searchParams]);
 
@@ -210,11 +215,18 @@ const ServicesSection: React.FC = () => {
             const token = getToken();
             const cleanQueryParams = cleanParams(queryParams);
 
-            const queryString = new URLSearchParams({
-                ...cleanQueryParams,
-                limit: String(limit),
-                offset: String(newOffset),
-            }).toString();
+            const queryString = new URLSearchParams(
+                Object.entries({
+                    ...cleanQueryParams,
+                    limit: String(limit),
+                    offset: String(newOffset),
+                }).reduce((acc, [key, value]) => {
+                    if (value !== undefined && value !== null) {
+                        acc[key] = String(value);
+                    }
+                    return acc;
+                }, {} as Record<string, string>)
+            ).toString();
 
             const mechanics = await apiFetch(`/mechanic/filter?${queryString}`, {
                 headers: {

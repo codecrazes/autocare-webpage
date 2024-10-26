@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import apiFetch from '@/utils/APIFetch';
 import Logo from '@/components/Logo/Logo';
@@ -15,6 +16,7 @@ export default function Header() {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const router = useRouter();
   const open = Boolean(anchorEl);
+  const pathname = usePathname();
 
   const getToken = () => {
     return localStorage.getItem('token') || sessionStorage.getItem('token');
@@ -75,7 +77,7 @@ export default function Header() {
   };
 
   const getClassName = (path: string) => {
-    return `cursor-pointer text-gray-600 text-sm ${router.pathname === path ? 'text-black' : ''}`;
+    return `cursor-pointer text-gray-600 text-sm ${pathname === path ? 'text-black' : ''}`;
   };
 
   return (

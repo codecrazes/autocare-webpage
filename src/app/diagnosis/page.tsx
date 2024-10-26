@@ -5,7 +5,7 @@ import jsPDF from 'jspdf';
 import LoggedInSection from '@/components/Diagnosis/LoggedIn';
 import LoggedOutSection from '@/components/Diagnosis/LoggedOut';
 import Logo from '@/components/Logo/Logo';
-import MoreThanOneVehicle from '@/components/Diagnosis/MoreThanOneVehicle';
+import MoreThanOneVehicle, { Vehicle as MoreThanOneVehicleType, Vehicle } from '@/components/Diagnosis/MoreThanOneVehicle';
 import OneVehicle from '@/components/Diagnosis/OneVehicle';
 import apiFetch from '../../utils/APIFetch';
 import { useNotification } from '@/components/NotificationContext/NotificationContext';
@@ -23,12 +23,6 @@ import DiagnosisQuestions from '@/components/Diagnosis/DiagnosisFirstQuestion';
 import DiagnosisFirstQuestion from '@/components/Diagnosis/DiagnosisFirstQuestion';
 import DiagnosisSecondQuestion from '@/components/Diagnosis/DiagnosisSecondQuestion';
 
-interface Vehicle {
-    brand: string;
-    year: number;
-    model: string;
-    id: number;
-}
 
 interface FormVehicleData {
     brand: string;
@@ -40,7 +34,13 @@ interface IsRequired {
     brand: boolean;
     year: boolean;
     model: boolean;
-    description?: boolean;
+    description: boolean;
+    street: boolean;
+    neighborhood: boolean;
+    number: boolean;
+    city: boolean;
+    state: boolean;
+    zip_code: boolean;
 }
 
 interface AddressData {
@@ -135,7 +135,13 @@ const Diagnosis: React.FC = () => {
         brand: false,
         year: false,
         model: false,
-        description: false,
+        description: true, 
+        street: false,
+        neighborhood: false,
+        number: false,
+        city: false,
+        state: false,
+        zip_code: false,
     });
     const [formAddressData, setFormAddressData] = useState<FormAddressData>({
         id: '',
@@ -210,20 +216,7 @@ const Diagnosis: React.FC = () => {
                     setLoading(false);
                 })
                 .catch((error) => {
-                    setLoading(false);
-                    if (error.response?.status === 422) {
-                        console.error('Erro de validação:', error.response.data.detail);
-                        addNotification('error', 'Erro', `Erro ao gerar diagnóstico: ${error.response.data.detail.map((e) => e.msg).join(', ')}`);
-                    } else if (error.response?.status === 404) {
-                        console.error('Veículo não encontrado:', error.response.data.detail);
-                        addNotification('error', 'Erro', 'Veículo não encontrado.');
-                    } else if (error.response?.status === 400) {
-                        console.error('Permissões insuficientes:', error.response.data.detail);
-                        addNotification('error', 'Erro', 'Permissões insuficientes.');
-                    } else {
-                        console.error('Erro ao gerar diagnóstico:', error);
-                        addNotification('error', 'Erro', 'Erro ao gerar diagnóstico.');
-                    }
+                    addNotification('error', 'Erro', 'Erro ao gerar diagnóstico.');
                 });
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -248,7 +241,7 @@ const Diagnosis: React.FC = () => {
                         const formattedSymptoms = response.symptoms
                             .replace(/^\[|\]$/g, '')
                             .replace(/'/g, '');
-                        symptomsDisplay = formattedSymptoms.split(',').map(item => item.trim()).join(', ');
+                        symptomsDisplay = formattedSymptoms.split(',').map((item: string) => item.trim()).join(', ');
                     } else if (Array.isArray(response.symptoms)) {
                         symptomsDisplay = response.symptoms.join(', ');
                     } else {
@@ -366,8 +359,7 @@ const Diagnosis: React.FC = () => {
         });
     };
 
-    const handlePreviousStep = (e: MouseEvent<HTMLDivElement>) => {
-        e.preventDefault();
+    const handlePreviousStep = () => {
         setCurrentStep((prevStep) => {
             const prevStepValue = prevStep - 1;
             localStorage.setItem('currentStep', prevStepValue.toString());
@@ -375,9 +367,7 @@ const Diagnosis: React.FC = () => {
         });
     };
 
-    const handleVehicleRegister = (e?: FormEvent) => {
-        e.preventDefault();
-
+    const handleVehicleRegister = () => {
         if (
             !formVehicleData.brand ||
             !formVehicleData.year ||
@@ -385,11 +375,12 @@ const Diagnosis: React.FC = () => {
             formVehicleData.brand === 'Selecione a marca do veículo'
         ) {
             addNotification('error', 'Erro', 'Por favor, preencha todos os campos obrigatórios.');
-            setIsRequired({
+            setIsRequired((prev) => ({
+                ...prev,
                 brand: !formVehicleData.brand,
                 year: !formVehicleData.year,
                 model: !formVehicleData.model,
-            });
+            }));
             return;
         }
 
@@ -406,7 +397,8 @@ const Diagnosis: React.FC = () => {
                 setVehicle(true);
             })
             .catch((error) => {
-                if (error.response && error.response.status === 422) {
+                const err = error as ErrorResponse;
+                if (err.response && err.response.status === 422) {
                     addNotification(
                         'error',
                         'Erro',
@@ -417,40 +409,44 @@ const Diagnosis: React.FC = () => {
                 }
             });
 
-        handleNextStep(e);
+        handleNextStep();
     };
 
-    const handleSelectVehicles = (vehicle: Vehicle) => {
-        setSelectedVehicle(vehicle);
+    const handleSelectVehicles = (vehicle: MoreThanOneVehicleType) => {
+        setSelectedVehicle({
+            brand: vehicle.brand,
+            year: vehicle.year,
+            model: vehicle.model,
+            id: vehicle.id
+        });
         localStorage.setItem('selectedVehicleId', vehicle.id.toString());
     };
 
-    const handleSelectVehicle = (e: MouseEvent<HTMLButtonElement | HTMLAnchorElement, globalThis.MouseEvent> | FormEvent<Element>) => {
+    const handleSelectVehicle = () => {
         vehicles.map(vehicle => {
             setSelectedVehicle(vehicle);
             localStorage.setItem('selectedVehicleId', vehicle.id.toString());
         });
-
-        handleNextStep(e);
+    
+        handleNextStep();
     };
 
     const handleNewVehicle = () => {
         setVehicle(false);
     };
 
-    const handleUpdateAddress = async (e: FormEvent<HTMLFormElement | HTMLButtonElement>): Promise<void> => {
-        e.preventDefault();
-
+    const handleUpdateAddress = async (): Promise<void> => {
         if (!formAddressData.street || !formAddressData.number || !formAddressData.neighborhood || !formAddressData.city || !formAddressData.state || !formAddressData.zip_code) {
             addNotification('error', 'Erro', 'Por favor, preencha todos os campos obrigatórios.');
-            setIsRequired({
+            setIsRequired((prev) => ({
+                ...prev,
                 street: !formAddressData.street,
                 number: !formAddressData.number,
                 neighborhood: !formAddressData.neighborhood,
                 city: !formAddressData.city,
                 state: !formAddressData.state,
                 zip_code: !formAddressData.zip_code
-            });
+            }));
             return;
         }
 
@@ -477,45 +473,50 @@ const Diagnosis: React.FC = () => {
             addNotification('success', 'Sucesso', 'Endereço atualizado com sucesso!');
             setAddress(true);
         } catch (error) {
-            if (error.response && error.response.status === 422) {
-                const errorMessage = error.response.data.detail.map((e: any) => e).join(', ');
+            if ((error as ErrorResponse).response?.status === 422) {
+                const err = error as ErrorResponse;
+                const errorMessage = err.response?.data.detail.map((e: any) => e.msg).join(', ') || 'Erro desconhecido';
                 addNotification('error', 'Erro', `Erro ao atualizar endereço: ${errorMessage}`);
             } else {
                 addNotification('error', 'Erro', 'Erro ao atualizar endereço.');
             }
         }
 
-        handleNextStep(e);
+        handleNextStep();
     };
 
-    const handleAddressRegister = async (e: FormEvent<HTMLFormElement | HTMLButtonElement>): Promise<void> => {
-        e.preventDefault();
-
-        if (!formAddressData.street || !formAddressData.number || !formAddressData.neighborhood ||
-            !formAddressData.city || !formAddressData.state || !formAddressData.zip_code) {
-            addNotification('error', 'Erro', 'Por favor, preencha todos os campos obrigatórios.');
-            setIsRequired({
+    const handleAddressRegister = async (): Promise<void> => {
+        if (
+            !formAddressData.street ||
+            !formAddressData.number ||
+            !formAddressData.neighborhood ||
+            !formAddressData.city ||
+            !formAddressData.state ||
+            !formAddressData.zip_code
+        ) {
+            setIsRequired((prev) => ({
+                ...prev,
                 street: !formAddressData.street,
                 neighborhood: !formAddressData.neighborhood,
                 number: !formAddressData.number,
                 city: !formAddressData.city,
                 state: !formAddressData.state,
-                zip_code: !formAddressData.zip_code
-            });
+                zip_code: !formAddressData.zip_code,
+            }));
             return;
         }
-
+    
         const token = getToken();
-
+    
         try {
             const response = await apiFetch('/address', {
                 method: 'POST',
                 body: JSON.stringify(formAddressData),
                 headers: {
-                    "Authorization": `Bearer ${token}`
-                }
+                    Authorization: `Bearer ${token}`,
+                },
             });
-
+    
             console.log('Endereço cadastrado com sucesso:', response);
             addNotification('success', 'Sucesso', 'Endereço cadastrado com sucesso!');
             setAddress(true);
@@ -530,8 +531,8 @@ const Diagnosis: React.FC = () => {
                 addNotification('error', 'Erro', 'Erro ao cadastrar endereço.');
             }
         }
-
-        handleNextStep(e);
+    
+        handleNextStep();
     };
 
     const handleIaDiagnosis = async (e: FormEvent): Promise<void> => {
@@ -539,7 +540,7 @@ const Diagnosis: React.FC = () => {
 
         if (!formIaData.description) {
             addNotification('error', 'Erro', 'Por favor, preencha todos os campos obrigatórios.');
-            setIsRequired({ description: !formIaData.description });
+            setIsRequired((prev) => ({ ...prev, description: !formIaData.description }));
             return;
         }
 
@@ -619,20 +620,14 @@ const Diagnosis: React.FC = () => {
             setLoading(false);
         } catch (error) {
             setLoading(false);
-            if (error.response?.status === 422) {
-                console.error('Erro de validação:', error.response.data.detail);
-                addNotification('error', 'Erro', `Erro ao gerar diagnóstico: ${error.response.data.detail.map((e: any) => e.msg).join(', ')}`);
-            } else {
-                console.error('Erro ao gerar diagnóstico:', error);
-                addNotification('error', 'Erro', 'Erro ao gerar diagnóstico.');
-            }
+            console.error('Erro ao gerar diagnóstico:', error);
+            addNotification('error', 'Erro', 'Erro ao gerar diagnóstico.');
         }
 
         handleNextStep(e);
     };
 
-    const handleLocate = (e: React.MouseEvent<HTMLButtonElement>): void => {
-        e.preventDefault();
+    const handleLocate = (): void => {
 
         let addressString = '';
         if (typeof addressData !== 'string') {
@@ -711,7 +706,7 @@ const Diagnosis: React.FC = () => {
     };
 
     const generateDiagnosis = () => {
-        const responses = {
+        const responses: { [key: string]: boolean | null } = {
             1: firstResponse,
             2: secondResponse,
         };
@@ -722,7 +717,7 @@ const Diagnosis: React.FC = () => {
         const questionIds = Object.keys(responses).sort((a, b) => Number(a) - Number(b));
 
         questionIds.forEach((questionId, index) => {
-            const answer = responses[questionId] ? "sim" : "nao";
+            const answer = responses[questionId as keyof typeof responses] ? "sim" : "nao";
             responseKey += index > 0 ? `_${answer}` : answer;
         });
 
@@ -806,13 +801,15 @@ const Diagnosis: React.FC = () => {
                                     </>
                                 ) : (
                                     <>
-                                        <ConfirmAddress
-                                            currentStep={currentStep}
-                                            handlePreviousStep={handlePreviousStep}
-                                            handleNextStep={handleNextStep}
-                                            changeUpdateAddress={() => setUpdateAddress(true)}
-                                            addressData={addressData}
-                                        />
+                                        {typeof addressData !== 'string' && (
+                                            <ConfirmAddress
+                                                currentStep={currentStep}
+                                                handlePreviousStep={handlePreviousStep}
+                                                handleNextStep={handleNextStep}
+                                                changeUpdateAddress={() => setUpdateAddress(true)}
+                                                addressData={addressData}
+                                            />
+                                        )}
                                     </>
                                 )}
                             </>

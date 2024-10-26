@@ -46,7 +46,8 @@ function SignUpForm() {
         first_name: false,
         last_name: false,
         password: false,
-        confirmPassword: false
+        confirmPassword: false,
+        phone_number: false
     });
     const [passwordStrength, setPasswordStrength] = useState<PasswordStrength>({ strength: 0, message: 'Muito Fraca' });
 
@@ -128,6 +129,11 @@ function SignUpForm() {
         setIsRequired({
             email: false,
             username: false,
+            first_name: false,
+            last_name: false,
+            password: false,
+            confirmPassword: false,
+            phone_number: false
         });
     };
 
@@ -150,7 +156,8 @@ function SignUpForm() {
                 first_name: true,
                 last_name: true,
                 password: true,
-                confirmPassword: true
+                confirmPassword: true,
+                phone_number: false
             });
             return;
         }
@@ -173,7 +180,8 @@ function SignUpForm() {
                 first_name: false,
                 last_name: false,
                 password: true,
-                confirmPassword: true
+                confirmPassword: true,
+                phone_number: false
             });
 
             return;
@@ -188,7 +196,8 @@ function SignUpForm() {
                 first_name: false,
                 last_name: false,
                 password: true,
-                confirmPassword: true
+                confirmPassword: true,
+                phone_number: false
             });
 
             return;
@@ -399,7 +408,7 @@ function SignUpForm() {
                                 handlePreviousStep={handlePreviousStep}
                                 handleNextStep={handleNextStep}
                             />
-                            <SecondaryButton text="Registrar-se" onClick={handleSubmit} />
+                            <SecondaryButton text="Registrar-se" onClick={(e) => handleSubmit(e as unknown as FormEvent<HTMLFormElement>)} />
                         </>
                     )}
                 </form>

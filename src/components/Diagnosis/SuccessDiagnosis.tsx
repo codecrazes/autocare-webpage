@@ -12,8 +12,11 @@ interface SuccessDiagnosisProps {
     currentStep: number;
     handlePreviousStep: (e: React.MouseEvent<HTMLDivElement>) => void;
     diagnosis: {
+
         symptoms: string;
-        price: number;
+
+        price: string;
+
     };
     handleLocate: () => void;
     generatePDF: () => void;
