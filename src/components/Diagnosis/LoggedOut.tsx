@@ -19,7 +19,7 @@ const LoggedOutSection: React.FC<LoggedOutSectionProps> = ({ currentStep, handle
     return (
         <div className="flex flex-col items-center">
             <Logo />
-            <ProgressBar currentStep={currentStep} totalSteps={5} />
+            <ProgressBar currentStep={currentStep} totalSteps={7} />
             <div className="diagnosisForm-content flex flex-col items-start w-[600px] h-full p-5">
                 <h1 className="text-black font-inter text-3xl font-normal leading-snug">
                     Bem-vindo ao Diagnóstico Inteligente da AutoCare

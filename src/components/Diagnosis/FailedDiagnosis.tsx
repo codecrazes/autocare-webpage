@@ -24,7 +24,7 @@ const FailedDiagnosis: React.FC<FailedDiagnosisProps> = ({
                 <FontAwesomeIcon icon={faArrowLeft} />
             </div>
             <Logo />
-            <ProgressBar currentStep={currentStep} totalSteps={5} />
+            <ProgressBar currentStep={currentStep} totalSteps={7} />
 
             <div className="flex flex-col items-start w-[600px] h-full p-5">
                 <h1 className="text-black text-3xl font-normal">

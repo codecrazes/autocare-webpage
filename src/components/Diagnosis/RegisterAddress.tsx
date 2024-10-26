@@ -55,7 +55,7 @@ const RegisterAddressComponent: React.FC<RegisterAddressComponentProps> = ({
                 <FontAwesomeIcon icon={faArrowLeft} />
             </div>
             <Logo />
-            <ProgressBar currentStep={currentStep} totalSteps={5} />
+            <ProgressBar currentStep={currentStep} totalSteps={7} />
 
             <div className="flex flex-col items-start w-[600px] py-5">
                 <h1 className="text-2xl font-semibold">

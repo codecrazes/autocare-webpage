@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, ChangeEvent } from 'react';
+import Image from 'next/image';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
 import { useRouter } from 'next/navigation';
@@ -52,7 +53,7 @@ const DiagnosisForm: React.FC<DiagnosisFormProps> = ({
                 <FontAwesomeIcon icon={faArrowLeft} />
             </div>
             <Logo />
-            <ProgressBar currentStep={currentStep} totalSteps={5} />
+            <ProgressBar currentStep={currentStep} totalSteps={7} />
 
             <div className="w-[600px] flex flex-col items-start py-5">
                 <h1 className="text-2xl font-normal">Ótimo, agora poderia descrever o seu problema?</h1>
@@ -76,7 +77,9 @@ const DiagnosisForm: React.FC<DiagnosisFormProps> = ({
                 </form>
 
                 <div className="flex justify-between w-full mt-5">
-                    <PrimaryButton text="Realizar Diagnóstico" onClick={handleIaDiagnosis} />
+                    <button className="bg-blue-500 hover:bg-blue-400 text-white p-3 rounded-full w-12 h-12" onClick={handleIaDiagnosis}>
+                        <Image className="w-5" src="/img/arrow-rigth.svg" alt="seta para direita" width={24} height={24} />
+                    </button>
 
                     <a
                         className="text-blue-600 underline cursor-pointer"

@@ -47,7 +47,7 @@ const MoreThanOneVehicle: React.FC<MoreThanOneVehicleProps> = ({
                 <FontAwesomeIcon icon={faArrowLeft} />
             </div>
             <Logo />
-            <ProgressBar currentStep={currentStep} totalSteps={5} />
+            <ProgressBar currentStep={currentStep} totalSteps={7} />
             <div className="w-3/4 flex flex-col items-start p-5">
                 <h1 className="text-3xl font-normal">Selecione o veículo que está com problemas</h1>
                 <div className="flex overflow-x-auto my-4 w-full h-[340px]">

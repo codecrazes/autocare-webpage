@@ -19,6 +19,9 @@ import FailedDiagnosis from '@/components/Diagnosis/FailedDiagnosis';
 import SuccessDiagnosis from '@/components/Diagnosis/SuccessDiagnosis';
 import { imgData } from '@/utils/Data';
 import Spinner from '@/components/Spinner/Spinner';
+import DiagnosisQuestions from '@/components/Diagnosis/DiagnosisFirstQuestion';
+import DiagnosisFirstQuestion from '@/components/Diagnosis/DiagnosisFirstQuestion';
+import DiagnosisSecondQuestion from '@/components/Diagnosis/DiagnosisSecondQuestion';
 
 interface Vehicle {
     brand: string;
@@ -101,6 +104,14 @@ const Diagnosis: React.FC = () => {
     const [diagnosisGenerated, setDiagnosisGenerated] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [problemId, setProblemId] = useState<number>(0);
+    const [symptomsMapping, setSymptomsMapping] = useState<{ [key: string]: string[] }>({});
+    const [diagnosisQuestions, setDiagnosisQuestions] = useState([
+        { id: 1, question: "O veículo faz algum barulho estranho?" },
+        { id: 2, question: "Há perda de potência no motor?" },
+    ]);
+    const [symptoms, setSymptoms] = useState<string[]>([]);
+    const [firstResponse, setFirstResponse] = useState<boolean | null>(null);
+    const [secondResponse, setSecondResponse] = useState<boolean | null>(null);
     const [formIaData, setFormIaData] = useState<FormIaData>({
         description: '',
         vehicle_id: ''
@@ -141,16 +152,55 @@ const Diagnosis: React.FC = () => {
         return localStorage.getItem('token') || sessionStorage.getItem('token');
     };
 
+    // useEffect(() => {
+    //     if (problemGenerated) {
+    //         setLoading(true);
+    //         const token = getToken();
+
+    //         apiFetch(`/diagnosis?problem_id=${problemId}`, {
+    //             method: 'POST',
+    //             headers: {
+    //                 Authorization: `Bearer ${token}`
+    //             }
+    //         })
+    //             .then((response) => {
+    //                 console.log('Diagnóstico gerado com sucesso:', response);
+    //                 addNotification('success', 'Sucesso', 'Diagnóstico gerado com sucesso!');
+    //                 localStorage.setItem('diagnosisId', response.id.toString());
+    //                 setDiagnosisGenerated(true);
+    //                 setLoading(false);
+    //             })
+    //             .catch((error) => {
+    //                 if (error.response?.status === 422) {
+    //                     setLoading(false);
+    //                     console.error('Erro de validação:', error.response.data.detail);
+    //                     addNotification('error', 'Erro', `Erro ao gerar diagnóstico: ${error.response.data.detail.map((e: any) => e.msg).join(', ')}`);
+    //                 } else {
+    //                     setLoading(false);
+    //                     console.error('Erro ao gerar diagnóstico:', error);
+    //                     addNotification('error', 'Erro', 'Erro ao gerar diagnóstico.');
+    //                 }
+    //             });
+    //     }
+    // }, [problemGenerated]);
+
     useEffect(() => {
         if (problemGenerated) {
             setLoading(true);
             const token = getToken();
+            const vehicleId = localStorage.getItem('selectedVehicleId');
 
-            apiFetch(`/diagnosis?problem_id=${problemId}`, {
+            apiFetch(`/diagnosis/v2`, {
                 method: 'POST',
                 headers: {
+                    'Content-Type': 'application/json',
                     Authorization: `Bearer ${token}`
-                }
+                },
+                body: JSON.stringify({
+                    vehicle_problem_id: problemId,
+                    vehicle_id: vehicleId,
+                    symptoms: symptoms
+                })
             })
                 .then((response) => {
                     console.log('Diagnóstico gerado com sucesso:', response);
@@ -160,12 +210,17 @@ const Diagnosis: React.FC = () => {
                     setLoading(false);
                 })
                 .catch((error) => {
+                    setLoading(false);
                     if (error.response?.status === 422) {
-                        setLoading(false);
                         console.error('Erro de validação:', error.response.data.detail);
-                        addNotification('error', 'Erro', `Erro ao gerar diagnóstico: ${error.response.data.detail.map((e: any) => e.msg).join(', ')}`);
+                        addNotification('error', 'Erro', `Erro ao gerar diagnóstico: ${error.response.data.detail.map((e) => e.msg).join(', ')}`);
+                    } else if (error.response?.status === 404) {
+                        console.error('Veículo não encontrado:', error.response.data.detail);
+                        addNotification('error', 'Erro', 'Veículo não encontrado.');
+                    } else if (error.response?.status === 400) {
+                        console.error('Permissões insuficientes:', error.response.data.detail);
+                        addNotification('error', 'Erro', 'Permissões insuficientes.');
                     } else {
-                        setLoading(false);
                         console.error('Erro ao gerar diagnóstico:', error);
                         addNotification('error', 'Erro', 'Erro ao gerar diagnóstico.');
                     }
@@ -478,7 +533,7 @@ const Diagnosis: React.FC = () => {
         handleNextStep(e);
     };
 
-    const handleIaDiagnosis = (e: FormEvent): void => {
+    const handleIaDiagnosis = async (e: FormEvent): Promise<void> => {
         e.preventDefault();
 
         if (!formIaData.description) {
@@ -487,8 +542,9 @@ const Diagnosis: React.FC = () => {
             return;
         }
 
-        const selectedVehicle = localStorage.getItem('selectedVehicleId') ?
-            JSON.parse(localStorage.getItem('selectedVehicleId') as string) : null;
+        const selectedVehicle = localStorage.getItem('selectedVehicleId')
+            ? JSON.parse(localStorage.getItem('selectedVehicleId') as string)
+            : null;
 
         if (!selectedVehicle) {
             addNotification('error', 'Erro', 'Por favor, selecione um veículo.');
@@ -505,32 +561,71 @@ const Diagnosis: React.FC = () => {
 
         const token = getToken();
 
-        apiFetch('/problem', {
-            method: 'POST',
-            body: JSON.stringify(updatedFormIaData),
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        })
-            .then((response) => {
-                console.log('Problema cadastrado com sucesso:', response);
-                addNotification('success', 'Sucesso', 'Problema cadastrado com sucesso!');
-                setProblemGenerated(true);
-                setProblemId(response.id);
-                setLoading(false);
-            })
-            .catch((error) => {
-                setProblemGenerated(false);
-                if (error.response?.status === 422) {
-                    setLoading(false);
-                    console.error('Erro de validação:', error.response.data.detail);
-                    addNotification('error', 'Erro', `Erro ao gerar diagnóstico: ${error.response.data.detail.map((e: any) => e.msg).join(', ')}`);
-                } else {
-                    setLoading(false);
-                    console.error('Erro ao gerar diagnóstico:', error);
-                    addNotification('error', 'Erro', 'Erro ao gerar diagnóstico.');
+        try {
+            const response = await apiFetch('/problem', {
+                method: 'POST',
+                body: JSON.stringify(updatedFormIaData),
+                headers: {
+                    Authorization: `Bearer ${token}`
                 }
             });
+
+            console.log('Problema cadastrado com sucesso:', response);
+            addNotification('success', 'Sucesso', 'Problema cadastrado com sucesso!');
+            setProblemId(response.id);
+
+            const iaResponse = await fetch(
+                'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=AIzaSyC7cv9t4bGQuWtRt9YBbbolxBDBRvtYNsI',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        contents: [
+                            {
+                                parts: [
+                                    {
+                                        text: `Você é um assistente virtual especializado em diagnóstico de problemas automotivos. Sua tarefa é gerar duas perguntas de sim/não para ajudar a identificar os sintomas descritos por um usuário. As perguntas devem ser claras, concisas e objetivas.\n\nOs sintomas que você deve identificar são os seguintes:\n\n[Aquecimento irregular, Aumento no consumo de combustível, ... (lista completa dos sintomas)]\n\n**Exemplo de entrada:**\n\n> Estou ouvindo ruídos ao frear e os freios estão rangendo.\n\n**Exemplo de saída em JSON:**\n\n{\n"perguntas": [\n"Você sente alguma vibração no pedal do freio?",\n"O ruído ao frear aumenta com a velocidade?"\n],\n"mapeamento_sintomas": {\n"sim_sim": ["Freios não assistem corretamente", "Ruído ao frear"],\n"sim_nao": ["Freios não assistem corretamente", "Freios rangendo"],\n"nao_sim": ["Ruído ao frear", "Freios rangendo"]\n}\n}\n\nENTRADA: \n\n- ${response.description}\n\nOBS: Você deve responder EXATAMENTE no formato especificado, não quero mais nenhuma explicação ou outro texto, responda SOMENTE com o json:\n\n{\n"perguntas": [],\n"mapeamento_sintomas": {\n"sim_sim": [],\n"sim_nao": [],\n"nao_sim": []\n}\n}`
+                                    }
+                                ]
+                            }
+                        ]
+                    })
+                }
+            );
+
+            const iaData = await iaResponse.json();
+
+            const perguntas = iaData.candidates[0]?.content?.parts[0]?.text
+                ? JSON.parse(iaData.candidates[0].content.parts[0].text).perguntas
+                : [];
+
+            const formattedQuestions = perguntas.map((question: string, index: number) => ({
+                id: index + 1,
+                question
+            }));
+
+            const mapeamento_sintomas = iaData.candidates[0]?.content?.parts[0]?.text
+                ? JSON.parse(iaData.candidates[0].content.parts[0].text).mapeamento_sintomas
+                : [];
+
+            if (mapeamento_sintomas) {
+                setSymptomsMapping(mapeamento_sintomas);
+            }
+
+            setDiagnosisQuestions(formattedQuestions);
+            setLoading(false);
+        } catch (error) {
+            setLoading(false);
+            if (error.response?.status === 422) {
+                console.error('Erro de validação:', error.response.data.detail);
+                addNotification('error', 'Erro', `Erro ao gerar diagnóstico: ${error.response.data.detail.map((e: any) => e.msg).join(', ')}`);
+            } else {
+                console.error('Erro ao gerar diagnóstico:', error);
+                addNotification('error', 'Erro', 'Erro ao gerar diagnóstico.');
+            }
+        }
 
         handleNextStep(e);
     };
@@ -614,6 +709,29 @@ const Diagnosis: React.FC = () => {
         doc.save('diagnostico_veicular.pdf');
     };
 
+    const generateDiagnosis = () => {
+        const responses = {
+            1: firstResponse,
+            2: secondResponse,
+        };
+
+        console.log("Respostas:", responses);
+
+        let responseKey = "";
+        const questionIds = Object.keys(responses).sort((a, b) => Number(a) - Number(b));
+
+        questionIds.forEach((questionId, index) => {
+            const answer = responses[questionId] ? "sim" : "nao";
+            responseKey += index > 0 ? `_${answer}` : answer;
+        });
+
+        console.log('Chave de resposta gerada:', responseKey);
+        console.log('Mapeamento de sintomas:', symptomsMapping);
+
+        setSymptoms(symptomsMapping[responseKey] || []);
+
+        setProblemGenerated(true);
+    };
 
     return (
         <div className="flex justify-center h-screen bg-gray-100">
@@ -725,6 +843,29 @@ const Diagnosis: React.FC = () => {
                     </>
                 )}
                 {currentStep === 5 && (
+                    <>
+                        <DiagnosisFirstQuestion
+                            question={diagnosisQuestions[0]?.question || ''}
+                            setFirstResponse={setFirstResponse}
+                            handleNextStep={handleNextStep}
+                            handlePreviousStep={handlePreviousStep}
+                            currentStep={currentStep}
+                        />
+                    </>
+                )}
+                {currentStep === 6 && (
+                    <>
+                        <DiagnosisSecondQuestion
+                            question={diagnosisQuestions[1]?.question || ''}
+                            setSecondResponse={setSecondResponse}
+                            handleNextStep={handleNextStep}
+                            handlePreviousStep={handlePreviousStep}
+                            currentStep={currentStep}
+                            generateDiagnosis={generateDiagnosis}
+                        />
+                    </>
+                )}
+                {currentStep === 7 && (
                     <>
                         {loading ? (
                             <div className='w-full h-full flex justify-center items-center'>

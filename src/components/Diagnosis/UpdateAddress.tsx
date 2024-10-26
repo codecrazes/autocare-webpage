@@ -58,7 +58,7 @@ const UpdateAddress: React.FC<UpdateAddressProps> = ({
                 <FontAwesomeIcon icon={faArrowLeft} />
             </div>
             <Logo />
-            <ProgressBar currentStep={currentStep} totalSteps={5} />
+            <ProgressBar currentStep={currentStep} totalSteps={7} />
             <div className="flex flex-col items-start w-[600px] py-5">
                 <h1 className="text-2xl font-semibold">Por favor, atualize seu endereço</h1>
                 <p className="text-lg text-gray-600 mt-1">Precisamos dessa informação para encontrar o parceiro mais próximo de você!</p>

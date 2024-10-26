@@ -61,12 +61,8 @@ export default function Header() {
   const handleMenuClick = (option: string) => () => {
     handleClose();
     if (option === 'logoff') {
-      localStorage.removeItem('token');
-      localStorage.removeItem('currentStep');
-      sessionStorage.removeItem('currentStep');
-      sessionStorage.removeItem('token');
-      localStorage.removeItem('diagnosisId');
-      localStorage.removeItem('selectedVehicleId');
+      localStorage.clear();
+      sessionStorage.clear();
       setIsLoggedIn(false);
       router.push('/login');
     } else if (option === 'profile') {

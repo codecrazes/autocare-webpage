@@ -36,7 +36,7 @@ const OneVehicle: React.FC<OneVehicleProps> = ({
                 <FontAwesomeIcon icon={faArrowLeft} />
             </div>
             <Logo />
-            <ProgressBar currentStep={currentStep} totalSteps={5} />
+            <ProgressBar currentStep={currentStep} totalSteps={7} />
             <div className="flex flex-col items-start w-3/4 p-5">
                 <h1 className="text-3xl font-normal mb-4">
                     Hum, parece que você precisa de ajuda com esse veículo, certo?
